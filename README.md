@@ -1,43 +1,57 @@
-# Dissaster Tweets Multilabel Model on WebApp
+# Dissaster Response Multilabel Model on WebApp
 Multi label classification web app for dissaster messages <br>
-Date: 05-Apr-2023
+Date: 07-Apr-2023
 
-<b>Medium Blog Link:</b> [Have you ever wondered? Analysis of the Airbnb rentals in Mexico City](https://medium.com/@frubi17/have-you-ever-wondered-analysis-of-the-airbnb-rentals-in-mexico-city-a337e33f0ed4)
+## Problem
+The social media has showed us that it can be a powerful source of communication, in case of a disaster a challenge is how to properly use this source to classify each message to improve the response time to each case.
 
 ## Objective
-The objective of this project is to answer 4 questions regarding the Airbnb rentals of Mexico City.<br>
-The first 2 questions are as a User and the final 2 questions are for a possible Host or rental owner.
+Create a preprocessing and machine learning pipelines for disaster messages to create a multi model and deploy it as a web app.
 
-### Questions:
-1. How many days before a main holiday should I reserve to still have several options?
-2. If I want to try to avoid crowded places or traffic jams on the highway, which day of the week should I travel?
-3. What neighborhood is the best for having an Airbnb in Mexico City?
-4. Does the size matter? What are the most important features to have a high occupancy?
+### Process:
+1. Create a database with a table for the preprocessed the CSV files with the texts and categories.
+2. Create a machine learning pipeline for the multilabel classification.
+3. Deploy the model as a Web App.
 
-### Libraries used
-matplotlib==3.5.1 <br>
-numpy==1.22.1 <br>
-pandas==1.4.2 <br>
-plotly==5.10.0 <br>
-scikit-learn==1.1.3 <br>
-seaborn==0.11.2 <br>
-tensorflow-intel==2.11.0 <br>
-folium==0.5.0 <br>
+### Main Libraries used
+Flask==2.2.3 <br>
+nltk==3.8.1 <br> 
+numpy==1.24.2 <br>
+pandas==2.0.0 <br>
+plotly==5.14.0 <br>
+scikit-learn==1.2.2 <br>
+SQLAlchemy==2.0.8 <br>
+
+The complete set of libraries can be found in the requirements.txt file
 
 ### Files Description
-<b>Airbnb_Analysis_CDMX.ipynb:</b> Notebook containing the complete project of the data analysis and model classification <br>
-<b>cdmx_map.zip:</b> Zipped file containing the HTML of the Interactive Map with all the rental propierties color coded by occupancy classification
-
-<b>Datasets</b> ([Link](http://insideairbnb.com/get-the-data/))
-- Mexico City 26-Mar-2022 (calendar.csv.gz, listings.csv.gz)
-- Mexico City 21-Jun-2022 (calendar.csv.gz, listings.csv.gz)
-- Mexico City 22-Sept-2022 (calendar.csv.gz, listings.csv.gz)
-- Mexico City 29-Dec-2022 (calendar.csv.gz, listings.csv.gz)
+</ul>
+<b>app/</b>
+<ul>
+  <li><b>run.py:</b> Python file to execute the Web App</li>
+  <li><b>templates/go.html:</b> HTML file to display the text input and classification result</li>
+  <li><b>templates/master.html:</b> HTML file for the main page</li>
+</ul>
+<b>data/</b>
+<ul>
+  <li><b>DisasterResponse.db:</b> Database of the merged CSV files preprocessed</li>
+  <li><b>process_data.py:</b> Python file to create the database from the CSV files</li>
+  <li><b>disaster_categories.csv:</b> CSV Dataset with the categories of each text</li>
+  <li><b>disaster_messages.csv:</b> Raw text messages to train the model</li>
+</ul>
+<b>models/</b>
+<ul>
+  <li><b>classifier.pkl:</b> Classification model as a pickle file</li>
+  <li><b>train_classifier.py:</b> Python file to create the classification model</li>
+</ul>
+<b>notebooks/</b>
+<ul>
+  <li><b>ETL Pipeline Preparation.ipynb:</b> Jupyter Notebook for the creation of the process_data.py</li>
+  <li><b>ML Pipeline Preparation.ipynb:</b> Jupyter Notebook for the creation of the train_classifier.py</li>
+</ul>
 
 ### Results Summary
-The main findings for this projects are, to plan your vacations at least 4 months earlier and if it's not possible at least try to avoid peak days like Friday or Saturday to travel.
-Also when using Airbnb always check the reviews in particular the 'Host response rate' and as a Host always try to motivate the user to give you back good reviews they'll help you get higher occupancy to your rentals.
+The current multilabel model has room for improvement in the NLP by adding additional feature extractions, and the ML model can also be improved by trying different models and increasing the range of the hyperparameter tuning which was limited due to time and process capabilities.
 
 ### Acknowledgements
-Mexico City Airbnb Datasets credit to [Inside Airbnb](http://insideairbnb.com/get-the-data/)<br>
-Ashish, K. Occupancy Rate Article from [WallStreetMojo](https://www.wallstreetmojo.com/occupancy-rate/)
+Appen dataset shared by [Udacity](http://udacity.com/)
