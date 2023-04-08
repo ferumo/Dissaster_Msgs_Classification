@@ -1,6 +1,7 @@
 import json
 import plotly
 import pandas as pd
+import re
 
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
@@ -11,18 +12,27 @@ from plotly.graph_objs import Bar
 import joblib
 from sqlalchemy import create_engine
 
+from nltk.corpus import stopwords
+
 
 app = Flask(__name__)
 
 def tokenize(text):
+    url_regex = 'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
+    
+    detected_urls = re.findall(url_regex, text)
+    for url in detected_urls:
+        text = text.replace(url, "urlplaceholder")
+    
+    text = re.sub(r"[^a-zA-Z0-9]", " ", text.lower().strip())
+    
+    stop_words = stopwords.words("english")
+    
     tokens = word_tokenize(text)
     lemmatizer = WordNetLemmatizer()
 
-    clean_tokens = []
-    for tok in tokens:
-        clean_tok = lemmatizer.lemmatize(tok).lower().strip()
-        clean_tokens.append(clean_tok)
-
+    clean_tokens = [lemmatizer.lemmatize(w) for w in tokens if w not in stop_words]
+   
     return clean_tokens
 
 # load data
@@ -39,18 +49,36 @@ model = joblib.load("models/classifier.pkl")
 def index():
     
     # extract data needed for visuals
-    # TODO: Below is an example - modify to extract data for your own visuals
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
-    
+    cat_count = df.iloc[:,4:].sum().sort_values(ascending=False)
+
+    X = df.message.values
+
+    vocab_dict = {}
+    for i in range(len(X)):
+        text = tokenize(X[i])
+        for w in text:
+            if w in vocab_dict:
+                vocab_dict[w] += 1
+            else:
+                vocab_dict[w] = 1
+    vocab_count = pd.Series(vocab_dict, name='word_count').sort_values(ascending=False)
+    vocab_words = vocab_count[:20].index
+    vocab_values = vocab_count[:20].values
+
     # create visuals
-    # TODO: Below is an example - modify to create your own visuals
     graphs = [
         {
             'data': [
                 Bar(
                     x=genre_names,
-                    y=genre_counts
+                    y=genre_counts,
+                    marker=dict(
+                        color='rgba(50, 171, 96, 0.6)',
+                        line=dict(
+                            color='rgba(50, 171, 96, 1.0)',
+                            width=1))
                 )
             ],
 
@@ -63,6 +91,52 @@ def index():
                     'title': "Genre"
                 }
             }
+        },
+        {
+            'data': [
+                Bar(
+                    x=cat_count.index,
+                    y=cat_count.values,
+                    marker=dict(
+                        color='rgba(50, 171, 96, 0.6)',
+                        line=dict(
+                            color='rgba(50, 171, 96, 1.0)',
+                            width=1))
+                )
+            ],
+
+            'layout': {
+                'title': 'Distribution of Message by Categories',
+                'yaxis': {
+                    'title': "Count"
+                },
+                'xaxis': {
+                    'title': "Categories"
+                }
+            }
+        },
+        {
+            'data': [
+                Bar(
+                    x=vocab_words,
+                    y=vocab_values,
+                    marker=dict(
+                        color='rgba(50, 171, 96, 0.6)',
+                        line=dict(
+                            color='rgba(50, 171, 96, 1.0)',
+                            width=1))
+                )
+            ],
+
+            'layout': {
+                'title': 'Top 20 Processed Words in Dataset',
+                'yaxis': {
+                    'title': "Count"
+                },
+                'xaxis': {
+                    'title': "Processed Words"
+                }
+            }
         }
     ]
     
@@ -71,7 +145,7 @@ def index():
     graphJSON = json.dumps(graphs, cls=plotly.utils.PlotlyJSONEncoder)
     
     # render web page with plotly graphs
-    return render_template('master.html', ids=ids, graphJSON=graphJSON)
+    return render_template('master.html', ids=ids, graphJSON=graphJSON, data_set=df)
 
 
 # web page that handles user query and displays model results
