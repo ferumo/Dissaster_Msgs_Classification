@@ -44,8 +44,8 @@ model = joblib.load("home/fernando17/Dissaster_Msgs_Classification/models/classi
 
 
 # index webpage displays cool visuals and receives user input text for model
-@app.route('home/fernando17/Dissaster_Msgs_Classification/')
-@app.route('home/fernando17/Dissaster_Msgs_Classification/index')
+@app.route('/')
+@app.route('/index')
 def index():
     
     # extract data needed for visuals
@@ -149,7 +149,7 @@ def index():
 
 
 # web page that handles user query and displays model results
-@app.route('home/fernando17/Dissaster_Msgs_Classification/go')
+@app.route('/go')
 def go():
     # save user input in query
     query = request.args.get('query', '') 
