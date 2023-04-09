@@ -36,16 +36,16 @@ def tokenize(text):
     return clean_tokens
 
 # load data
-engine = create_engine('sqlite:///data/DisasterResponse.db')
+engine = create_engine('sqlite:///home/fernando17/Dissaster_Msgs_Classification/data/DisasterResponse.db')
 df = pd.read_sql_table('Messages', engine)
 
 # load model
-model = joblib.load("models/classifier.pkl")
+model = joblib.load("home/fernando17/Dissaster_Msgs_Classification/models/classifier.pkl")
 
 
 # index webpage displays cool visuals and receives user input text for model
-@app.route('/')
-@app.route('/index')
+@app.route('home/fernando17/Dissaster_Msgs_Classification/')
+@app.route('home/fernando17/Dissaster_Msgs_Classification/index')
 def index():
     
     # extract data needed for visuals
@@ -149,7 +149,7 @@ def index():
 
 
 # web page that handles user query and displays model results
-@app.route('/go')
+@app.route('home/fernando17/Dissaster_Msgs_Classification/go')
 def go():
     # save user input in query
     query = request.args.get('query', '') 
